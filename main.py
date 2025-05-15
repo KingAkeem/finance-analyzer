@@ -1,11 +1,14 @@
 import requests
 
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM  # Updated import
 from langchain.prompts import PromptTemplate
 from bs4 import BeautifulSoup
 
 # Initialize local LLM (e.g., Mistral 7B)
-llm = Ollama(model="mistral")  # Run `ollama pull mistral` first
+llm = OllamaLLM(
+    base_url="http://ollama:11434",
+    model="mistral"
+)
 
 def get_headlines() -> list[str]:
     """

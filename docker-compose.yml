@@ -1,0 +1,35 @@
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:rocm
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - OLLAMA_NO_CUDA=1
+      - OLLAMA_HIP=1
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0  # RX 6000 series (adjust as needed)
+    volumes:
+      - ollama_data:/root/.ollama
+    group_add:
+      - "video"
+    ports:
+      - "11434:11434"
+    privileged: true  # Required for GPU access
+
+  analyzer:
+    build: .
+    devices:
+      - /dev/kfd:/dev/kfd  # Only needed if analyzer also uses GPU
+      - /dev/dri:/dev/dri
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - ollama
+    volumes:
+      - ./:/app
+
+volumes:
+  ollama_data:

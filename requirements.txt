@@ -1,4 +1,4 @@
 ollama
 beautifulsoup4
-langchain_community
 langchain
+langchain-ollama
