@@ -1,6 +1,8 @@
 services:
   ollama:
     container_name: ollama
+    expose:
+      - "11434"
     image: ollama/ollama:rocm
     devices:
       - /dev/kfd:/dev/kfd

@@ -1,13 +1,17 @@
 import requests
 import re
-from typing import List, Dict
+
+from edgar import Company, TXTML, Edgar
+from typing import List
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from langchain_ollama import OllamaLLM
 from langchain.prompts import PromptTemplate
-from langchain.agents import Tool, AgentType
+from langchain.agents import AgentType
 from langchain.agents import initialize_agent
 from langchain.schema import SystemMessage
+from langchain.tools import StructuredTool
+from pydantic import BaseModel, Field
 
 # Initialize LLMs
 llm = OllamaLLM(base_url="http://ollama:11434", model="mistral")
@@ -34,25 +38,34 @@ def get_yahoo_headlines() -> List[str]:
 # Research Tools
 class FinancialResearchTools:
     @staticmethod
-    def search_sec_filings(query: str) -> str:
+    def search_sec_filings(company: str) -> str:
         """Mock SEC filings search"""
-        return f"SEC filings for {query}: Revenue ↑5% QoQ, EPS $1.25"
+        print('this is company:', company)
+        return {f"SEC filings for {company}": "Revenue ↑5% QoQ, EPS $1.25"}
     
     @staticmethod
     def get_market_sentiment() -> str:
         """Mock sentiment analysis"""
         return "Current market sentiment: Neutral (Fear & Greed Index: 52)"
 
+class SECFilingsInput(BaseModel):
+    company: str = Field(
+        description="Company name or ticker symbol for SEC filings search",
+        example="AAPL"
+    )
+
 tools = [
-    Tool(
+    StructuredTool.from_function(
         name="SECFilings",
         func=FinancialResearchTools.search_sec_filings,
-        description="Search SEC filings for company financial data"
+        description="Search SEC filings for company financial data.",
+        args_schema=SECFilingsInput
     ),
-    Tool(
+    StructuredTool.from_function(
         name="MarketSentiment",
         func=FinancialResearchTools.get_market_sentiment,
-        description="Get current market sentiment indicators"
+        description="Get current market sentiment indicators",
+        args_schema=None
     )
 ]
 
@@ -91,6 +104,9 @@ def analyze_and_research():
             1. Always verify facts using tools
             2. Cite sources for all data
             3. Distinguish between facts and interpretations
+            4. Always use tools with proper input format
+            5. For SECFilings: provide only company name as string
+            6. For MarketSentiment: no input needed
             """)
         },
         verbose=True
