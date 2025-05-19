@@ -1,11 +1,9 @@
-Here's a comprehensive `README.md` for your GitHub repository:
-
 # Financial Headlines Analyzer with Local LLM
 
 ## Features
 
-- 📰 Fetches latest financial headlines from Yahoo Finance
-- 🔍 Analyzes headlines using Mistral 7B LLM via Ollama
+- 📰 Fetches latest financial headlines from Yahoo Finance and Reuters
+- 🔍 Analyzes headlines using Mistral 7B LLM via Ollama and performs research using SEC Filings with Llama3 LLM
 - � Identifies key trends, sector categorization, and overall sentiment
 - 🐳 Docker and Docker Compose support for easy deployment
 
@@ -20,8 +18,8 @@ Here's a comprehensive `README.md` for your GitHub repository:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/financial-headlines-analyzer.git
-cd financial-headlines-analyzer
+git clone https://github.com/KingAkeem/financial-analyzer.git
+cd financial-analyzer
 ```
 
 ### 2. Start the services with Docker Compose
@@ -89,6 +87,10 @@ ollama pull mistral
 
 ```bash
 ollama pull llama3
+```
+
+```bash
+ollama serve # if not running as a service
 ```
 
 4. Run the application:
